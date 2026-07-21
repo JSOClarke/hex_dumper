@@ -1,11 +1,17 @@
 use std::{error::Error, fs::{self, File}, io::{self, Read}, path::{self, Path}};
 mod hex_dump;
+
+use std::fmt::Write;
 use hex_dump::process_line;
 fn main()->io::Result<()> {
+    let mut result:String = String::new();
+
+    write!(result,"Believe me"); 
+
     let path = Path::new("../test_files/test_1.txt");
     let mut file_handle= File::open(path)?;
     let mut buffer = [0u8;16]; 
-    let mut offset: i32 = 0;
+    let mut offset: usize = 0;
 
     loop {
         // fill the buffer with the values from the file_handle 
@@ -18,8 +24,9 @@ fn main()->io::Result<()> {
         let chunk = &buffer[..bytes_read];
         
          // this is basically giving us read rights to the buffer array making sure that we are only touching teh bytes that have been streamed
-        process_line(chunk,offset);
-        offset +=bytes_read as i32;
+        let res = process_line(chunk,offset);
+        println!("{}",&res);
+        offset +=bytes_read;
         println!()
     } 
 
