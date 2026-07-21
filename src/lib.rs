@@ -40,7 +40,8 @@ fn test_e2e(){
 // Output -> Fully formatted hexdump line to print
 pub fn format_line(offset:usize,hex_repr:&str,asci_repr:&str)->String{
     let mut result:String = String::new();
-    let _ = write!(result,"{:08x} | {:40} | {}",offset,hex_repr,asci_repr);
+    
+    let _ = write!(result,"{:08x} {:40} {}",offset,hex_repr,asci_repr);
     return result;
 }
 // returns the hex and ascii representation of the line
