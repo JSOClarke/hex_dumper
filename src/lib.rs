@@ -39,9 +39,9 @@ fn test_e2e(){
 
 // Output -> Fully formatted hexdump line to print
 pub fn format_line(offset:usize,hex_repr:&str,asci_repr:&str)->String{
-    let mut finished_string:String = String::new();
-    let _ = write!(finished_string,"{:08x} | {:32} | {}",offset,hex_repr,asci_repr);
-    return finished_string;
+    let mut result:String = String::new();
+    let _ = write!(result,"{:08x} | {:32} | {}",offset,hex_repr,asci_repr);
+    return result;
 }
 // Goal - Converts the line so that it can get passed to the format line
 pub fn convert_chunk(line:&[u8])->(String,String){
