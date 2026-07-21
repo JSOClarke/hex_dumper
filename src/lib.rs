@@ -43,7 +43,7 @@ pub fn format_line(offset:usize,hex_repr:&str,asci_repr:&str)->String{
     let _ = write!(result,"{:08x} | {:32} | {}",offset,hex_repr,asci_repr);
     return result;
 }
-// Goal - Converts the line so that it can get passed to the format line
+// returns the hex and ascii representation of the line
 pub fn convert_chunk(line:&[u8])->(String,String){
     let mut hex_repr:String = String::new();
     let mut asci_repr:String = String::new();

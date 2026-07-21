@@ -1,18 +1,14 @@
 use std::{fs::{self, File}, io::{self, Read}, path::{self, Path}};
 mod lib;
-
-
-use lib::process_line;
 fn main()->io::Result<()> {
 
     
 
 
 
-    let path = Path::new("../test_files/test_1.txt");
+    let path = Path::new("test_folder/test_file.txt");
     let mut file_handle= File::open(path)?;
     let mut buffer = [0u8;16]; 
-    let mut buff_string = String::new();
 
     let mut offset: usize = 0;
 
@@ -26,18 +22,13 @@ fn main()->io::Result<()> {
 
         let chunk = &buffer[..bytes_read];
         
-         // this is basically giving us read rights to the buffer array making sure that we are only touching teh bytes that have been streamed
-        let res = process_line(chunk,offset);
-        println!("{}",&res);
+        let (hex_dumper,ascii_dumper) = lib::convert_chunk(chunk);
+        let result = lib::format_line(offset,&hex_dumper,&ascii_dumper);
+        println!("{}",&result);
         offset +=bytes_read;
-        println!()
     } 
 
     Ok(())
     
 }
 
-
-pub fn decimal_to_hex(){
-
-}
