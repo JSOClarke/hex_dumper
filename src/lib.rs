@@ -11,6 +11,25 @@ fn test_line_process(){
 
 }
 
+#[test]
+
+fn test_format_line(){
+    let offset = 0;
+    let hex_layout = "4656 4343 656";
+    let asci_rep = "hello world";
+    let mut buff_string:String = String::new();
+
+    format_line(offset, hex_layout, asci_rep, &mut buff_string);
+    println!("{}",buff_string);
+}
+
+
+
+
+// Output -> Fully formatted hexdump line to print
+pub fn format_line(offset:usize,hex_layout:&str,asci_rep:&str,buff_string:&mut String){
+    let _ = write!(buff_string,"{:08x} | {:?} | {:?}",offset,hex_layout,asci_rep);
+}
 
 pub fn process_line(line:&[u8],offset:usize)->String{
     let mut result = String::new();

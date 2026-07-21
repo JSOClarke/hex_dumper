@@ -1,16 +1,19 @@
-use std::{error::Error, fs::{self, File}, io::{self, Read}, path::{self, Path}};
-mod hex_dump;
+use std::{fs::{self, File}, io::{self, Read}, path::{self, Path}};
+mod lib;
 
-use std::fmt::Write;
-use hex_dump::process_line;
+
+use lib::process_line;
 fn main()->io::Result<()> {
-    let mut result:String = String::new();
 
-    write!(result,"Believe me"); 
+    
+
+
 
     let path = Path::new("../test_files/test_1.txt");
     let mut file_handle= File::open(path)?;
     let mut buffer = [0u8;16]; 
+    let mut buff_string = String::new();
+
     let mut offset: usize = 0;
 
     loop {
