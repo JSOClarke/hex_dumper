@@ -4,10 +4,11 @@ use std::fmt::Write;
 
 #[test]
 
-fn test_line_process(){
-    let line:[u8;5] = [104,2,3,4,5];
-    let result = process_line(&line,0);
-    assert_eq!(result,String::from("blood"));
+fn test_conver_chunk(){
+    let data = b"Jordan Clarke";
+    let (hex_repr,asci_repr) = convert_chunk(data);
+    assert_eq!(hex_repr,"string");
+    assert_eq!(asci_repr,"string");
 
 }
 
@@ -15,20 +16,53 @@ fn test_line_process(){
 
 fn test_format_line(){
     let offset = 0;
-    let hex_layout = "4656 4343 656";
+    let hex_repr = "4656 4343 656";
     let asci_rep = "hello world";
-    let mut buff_string:String = String::new();
 
-    format_line(offset, hex_layout, asci_rep, &mut buff_string);
-    println!("{}",buff_string);
+
+    let result = format_line(offset, hex_repr, asci_rep);
+    assert_eq!(result,"string");
+}
+#[test]
+
+fn test_e2e(){
+    let data = b"This is the first thing that i could think of";
+    let (hex_repr,asci_repr) = convert_chunk(data);
+    let result = format_line(0, &hex_repr, &asci_repr);
+    
+    assert_eq!(result,"string");
+
 }
 
 
 
 
 // Output -> Fully formatted hexdump line to print
-pub fn format_line(offset:usize,hex_layout:&str,asci_rep:&str,buff_string:&mut String){
-    let _ = write!(buff_string,"{:08x} | {:?} | {:?}",offset,hex_layout,asci_rep);
+pub fn format_line(offset:usize,hex_repr:&str,asci_repr:&str)->String{
+    let mut finished_string:String = String::new();
+    let _ = write!(finished_string,"{:08x} | {:32} | {}",offset,hex_repr,asci_repr);
+    return finished_string;
+}
+// Goal - Converts the line so that it can get passed to the format line
+pub fn convert_chunk(line:&[u8])->(String,String){
+    let mut hex_repr:String = String::new();
+    let mut asci_repr:String = String::new();
+
+    for (i,byte) in line.iter().enumerate(){
+        let _ = write!(hex_repr,"{:02x}",byte);
+        if (i+1) % 2 == 0{
+            let _ = write!(hex_repr," ");
+        }
+            if *byte >= 32 && *byte <= 126 {
+                let _ = write!(asci_repr,"{}",*byte as char);
+            }
+            else {
+                let _ = write!(asci_repr,".",);
+            }   
+        
+    }
+
+    return (hex_repr,asci_repr);
 }
 
 pub fn process_line(line:&[u8],offset:usize)->String{
