@@ -1,4 +1,4 @@
-use std::{fs::{self, File}, io::{self, Read}, path::{self, Path}};
+use std::{fs::{self, File}, io::{self, BufWriter, Read}, path::{self, Path}};
 use std::io::Write;
 mod lib;
 mod trait_understanding;
@@ -11,7 +11,8 @@ fn main()->io::Result<()> {
     let path = Path::new("test_folder/test_file.txt");
     let mut file_handle= File::open(path)?;
     let mut buffer = [0u8;16]; 
-    let mut new_file = File::create("hex_dump_output.txt")?;
+    let file = File::create("hex_dump_output.txt")?;
+    let mut new_file = BufWriter::new(file);
     let mut hex_repr_buf = String::new();
     let mut asci_repr_buf = String::new();
     
