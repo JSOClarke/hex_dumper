@@ -23,6 +23,19 @@ fn test_format_line(){
     let result = format_line(offset, hex_repr, asci_rep);
     assert_eq!(result,"string");
 }
+
+#[test]
+
+fn test_format_line_v2(){
+    let mut result = String::new();
+    let offset = 0;
+    let hex_repr = "4656 4343 656";
+    let asci_rep = "hello world";
+
+
+    format_line_v2(offset, hex_repr, asci_rep,&mut result);
+    assert_eq!(result,"string");
+}
 #[test]
 
 fn test_e2e(){
@@ -30,6 +43,31 @@ fn test_e2e(){
     let (hex_repr,asci_repr) = convert_chunk(data);
     let result = format_line(0, &hex_repr, &asci_repr);
     
+    assert_eq!(result,"string");
+}
+
+#[test]
+
+fn test_convert_chunk_v2(){
+    let data = b"This is the first thing that i could think of";
+    let mut hex_repr_buf:String = String::new();
+    let mut asci_repr_buf:String = String::new();
+    convert_chunk_v2(data,&mut hex_repr_buf, &mut asci_repr_buf);
+    assert_eq!(hex_repr_buf,"string");
+    assert_eq!(asci_repr_buf,"string");
+
+}
+
+#[test]
+
+fn test_e2e_v2(){
+    let data = b"This is the first thing that i could think of";
+    let mut hex_repr_buf:String = String::new();
+    let mut asci_repr_buf:String = String::new();
+    let mut offset:usize = 0;
+    let mut result:String = String::new();
+    convert_chunk_v2(data,&mut hex_repr_buf, &mut asci_repr_buf);
+    format_line_v2(offset, &hex_repr_buf, &asci_repr_buf,&mut result);
     assert_eq!(result,"string");
 
 }
@@ -40,9 +78,16 @@ fn test_e2e(){
 // Output -> Fully formatted hexdump line to print
 pub fn format_line(offset:usize,hex_repr:&str,asci_repr:&str)->String{
     let mut result:String = String::new();
-    
+
     let _ = write!(result,"{:08x} {:40} {}",offset,hex_repr,asci_repr);
     return result;
+}
+
+pub fn format_line_v2(offset:usize,hex_repr:&str,asci_repr:&str,result:&mut String){
+    // let mut result:String = String::new();
+
+    let _ = write!(result,"{:08x} {:40} {}",offset,hex_repr,asci_repr);
+    // return result;
 }
 // returns the hex and ascii representation of the line
 pub fn convert_chunk(line:&[u8])->(String,String){
@@ -66,6 +111,25 @@ pub fn convert_chunk(line:&[u8])->(String,String){
     return (hex_repr,asci_repr);
 }
 
+
+pub fn convert_chunk_v2(line:&[u8],hex_repr_buf:&mut String,asci_repr_buf:&mut String){
+    hex_repr_buf.clear();
+    asci_repr_buf.clear();
+
+    for (i,byte) in line.iter().enumerate(){
+        let _ = write!(hex_repr_buf,"{:02x}",byte);
+        if (i+1) % 2 == 0{
+            let _ = write!(hex_repr_buf," ");
+        }
+            if *byte >= 32 && *byte <= 126 {
+                let _ = write!(asci_repr_buf,"{}",*byte as char);
+            }
+            else {
+                let _ = write!(asci_repr_buf,".",);
+            }   
+        
+    }
+}
 pub fn process_line(line:&[u8],offset:usize)->String{
     let mut result = String::new();
     // byte_offset
