@@ -1,4 +1,6 @@
-use std::fmt::Write;
+use std::fmt::Write as FmtWrite;
+use std::io::Result;
+use std::io::Write;
 
 #[cfg(test)]
 
@@ -24,18 +26,6 @@ fn test_format_line(){
     assert_eq!(result,"string");
 }
 
-#[test]
-
-fn test_format_line_v2(){
-    let mut result = String::new();
-    let offset = 0;
-    let hex_repr = "4656 4343 656";
-    let asci_rep = "hello world";
-
-
-    format_line_v2(offset, hex_repr, asci_rep,&mut result);
-    assert_eq!(result,"string");
-}
 #[test]
 
 fn test_e2e(){
@@ -72,6 +62,17 @@ fn test_e2e_v2(){
 
 }
 
+fn test_e2e_writer(){
+        let data = b"Im as high as can be sad as can be pull up ball like cp3 that is just me fucking the bitch from the back as we speak. I tell you to stay";
+    let mut hex_repr_buf:String = String::new();
+    let mut asci_repr_buf:String = String::new();
+    let mut offset:usize = 0;
+    let mut result:String = String::new();
+    convert_chunk_v2(data,&mut hex_repr_buf, &mut asci_repr_buf);
+    format_line_v2(offset, &hex_repr_buf, &asci_repr_buf,&mut result);
+    assert_eq!(result,"string");
+}
+
 
 
 
@@ -89,6 +90,44 @@ pub fn format_line_v2(offset:usize,hex_repr:&str,asci_repr:&str,result:&mut Stri
     let _ = write!(result,"{:08x} {:40} {}",offset,hex_repr,asci_repr);
     // return result;
 }
+#[test]
+fn test_format_line_v2(){
+    let mut result = String::new();
+    let offset = 0;
+    let hex_repr = "4656 4343 656";
+    let asci_rep = "hello world";
+
+
+    format_line_v2(offset, hex_repr, asci_rep,&mut result);
+    assert_eq!(result,"string");
+}
+
+pub fn format_line_write<T:Write>(hex_repr:&str,asci_repr:&str,writer:&mut T)->std::io::Result<()>{
+    // let mut result:String = String::new();
+
+    write!(writer,"{:40} {}",hex_repr,asci_repr)
+    // Ok(())
+    // return result;
+}
+
+#[test]
+
+fn test_format_line_writer(){
+    let mut result = vec![];
+    let compare = b"00000000 4656 4343 656 hello world";
+    let offset = 0;
+    let hex_repr = "4656 4343 656";
+    let asci_rep = "hello world";
+
+
+    format_line_write(offset, hex_repr, asci_rep,&mut result).unwrap();
+    
+    assert_eq!(result,compare);
+}
+
+
+
+
 // returns the hex and ascii representation of the line
 pub fn convert_chunk(line:&[u8])->(String,String){
     let mut hex_repr:String = String::new();
@@ -113,8 +152,7 @@ pub fn convert_chunk(line:&[u8])->(String,String){
 
 
 pub fn convert_chunk_v2(line:&[u8],hex_repr_buf:&mut String,asci_repr_buf:&mut String){
-    hex_repr_buf.clear();
-    asci_repr_buf.clear();
+
 
     for (i,byte) in line.iter().enumerate(){
         let _ = write!(hex_repr_buf,"{:02x}",byte);
